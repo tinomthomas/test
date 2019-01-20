@@ -1,0 +1,60 @@
+<strong><h2 id="overview">1. Overview<strong>
+
+In this short tutorial, we're going to learn how to solve the error <strong>Response for preflight has invalid HTTP status code: 401.</strong> which usually happens in appplications that supports cross origin communication and uses spring security.
+
+<strong><h2 id="cors">2. Creating CORS API<strong>
+
+To simulate the problem, let's first create two simple REST APIs that supports Cross-Origin request:
+
+@RestController
+@CrossOrigin
+public class UserController {
+
+    @RequestMapping("/login")
+    public boolean login(@RequestBody User user) {
+        return user.getUserName()
+            .equals("user") && user.getPassword().equals("password");
+    }
+
+    @RequestMapping("/user")
+    public Principal user(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization")
+            .substring("Basic".length()).trim();
+        
+        return () -> new String(Base64.getDecoder()
+            .decode(authToken)).split(":")[0];
+    }
+}
+
+The <em>@CrossOrigin</em> annotation make sure that our APIS can be accessible from any origins.
+
+<strong><h2 id="secure">3. Securing the CORS API<strong>
+
+Let's now secure our CORS APIs with the spring security:
+
+@Configuration
+@EnableWebSecurity
+public class BasicAuthConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+            .withUser("user")
+            .password("password")
+            .roles("USER");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf()
+            .disable()
+            .authorizeRequests()
+            .antMatchers("/login")
+            .permitAll()
+            .anyRequest()
+            .authenticated()
+            .and()
+            .httpBasic();
+    }
+}
+
