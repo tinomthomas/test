@@ -1,0 +1,190 @@
+ @Test
+    public void givenCompletable_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnCompletableAssembly(completable -> {
+                System.out.println("Assembling Completable");
+                return completable;
+            });
+            Completable.fromSingle(Single.just(1));
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void givenCompletable_whenSubscribed_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnCompletableSubscribe((completable, observer) -> {
+                System.out.println("Subscribing to Completable");
+                return observer;
+            });
+
+            Completable.fromSingle(Single.just(1))
+                .test(true);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void givenObservable_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnObservableAssembly(observable -> {
+                System.out.println("Assembling Observable");
+                return observable;
+            });
+
+            Observable.range(1, 10);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void givenObservable_whenSubscribed_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnObservableSubscribe((observable, observer) -> {
+                System.out.println("Suscribing to Observable");
+                return observer;
+            });
+
+            Observable.range(1, 10)
+                .test(true);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void givenConnectableObservable_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnConnectableObservableAssembly(connectableObservable -> {
+                System.out.println("Assembling ConnectableObservable");
+                return connectableObservable;
+            });
+
+            ConnectableObservable.range(1, 10)
+                .publish()
+                .connect();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void givenFlowable_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnFlowableAssembly(flowable -> {
+                System.out.println("Assembling Flowable");
+                return flowable;
+            });
+
+            Flowable.range(1, 10);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void givenFlowable_whenSubscribed_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnFlowableSubscribe((flowable, observer) -> {
+                System.out.println("Suscribing to Flowable");
+                return observer;
+            });
+
+            Flowable.range(1, 10)
+                .test();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void givenConnectableFlowable_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnConnectableFlowableAssembly(connectableFlowable -> {
+                System.out.println("Assembling ConnectableFlowable");
+                return connectableFlowable;
+            });
+
+            ConnectableFlowable.range(1, 10)
+                .publish()
+                .connect();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void givenParallel_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnParallelAssembly(parallelFlowable -> {
+                System.out.println("Assembling ParallelFlowable");
+                return parallelFlowable;
+            });
+
+            ParallelFlowable.from(Flowable.range(1, 10));
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void givenMaybe_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnMaybeAssembly(maybe -> {
+                System.out.println("Assembling Maybe");
+                return maybe;
+            });
+
+            Maybe.just(1);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void givenMaybe_whenSubscribed_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnMaybeSubscribe((maybe, observer) -> {
+                System.out.println("Suscribing to Maybe");
+                return observer;
+            });
+
+            Maybe.just(1)
+                .test();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+    
+    @Test
+    public void givenSingle_whenAssembled_shouldExecuteTheHook() {
+        try {
+            RxJavaPlugins.setOnSingleAssembly(single -> {
+                System.out.println("Assembling Single");
+                return single;
+            });
+
+            Single.just(1);
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
+
+    @Test
+    public void givenSingle_whenSubscribed_shouldExecuteTheHook() {
+
+        try {
+            RxJavaPlugins.setOnSingleSubscribe((single, observer) -> {
+                System.out.println("Suscribing to Single");
+                return observer;
+            });
+
+            Single.just(1)
+                .test();
+        } finally {
+            RxJavaPlugins.reset();
+        }
+    }
