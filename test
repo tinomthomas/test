@@ -1,60 +1,10 @@
-<strong><h2 id="overview">1. Overview<strong>
+<h2 id="overview"><strong>1. Overview</strong></h2>
+In this tutorial we're going to learn how to implement Entity Graphs with Spring Data JPA. We'll be creating a short example to demonstrate it.
 
-In this short tutorial, we're going to learn how to solve the error <strong>Response for preflight has invalid HTTP status code: 401.</strong> which usually happens in appplications that supports cross origin communication and uses spring security.
+<h2 id="entity-graph"><strong>2. What is an Entity Graph</strong></h2>
+<strong>JPA 2.1 has introduced the Entity Graph feature as a more sophisticated method of dealing with performance loading.</strong>
 
-<strong><h2 id="cors">2. Creating CORS API<strong>
+It allows defining a template by grouping the related persistence fields which we want to retrieve and lets us choose the graph type at runtime. Check out our dedicated article on JPA Entity Graph(https://www.baeldung.com/jpa-entity-graph) for a detailed reference.
 
-To simulate the problem, let's first create two simple REST APIs that supports Cross-Origin request:
-
-@RestController
-@CrossOrigin
-public class UserController {
-
-    @RequestMapping("/login")
-    public boolean login(@RequestBody User user) {
-        return user.getUserName()
-            .equals("user") && user.getPassword().equals("password");
-    }
-
-    @RequestMapping("/user")
-    public Principal user(HttpServletRequest request) {
-        String authToken = request.getHeader("Authorization")
-            .substring("Basic".length()).trim();
-        
-        return () -> new String(Base64.getDecoder()
-            .decode(authToken)).split(":")[0];
-    }
-}
-
-The <em>@CrossOrigin</em> annotation make sure that our APIS can be accessible from any origins.
-
-<strong><h2 id="secure">3. Securing the CORS API<strong>
-
-Let's now secure our CORS APIs with the spring security:
-
-@Configuration
-@EnableWebSecurity
-public class BasicAuthConfiguration extends WebSecurityConfigurerAdapter {
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-            .withUser("user")
-            .password("password")
-            .roles("USER");
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.csrf()
-            .disable()
-            .authorizeRequests()
-            .antMatchers("/login")
-            .permitAll()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .httpBasic();
-    }
-}
-
+<h2 id="model-creation"><strong>3. Creating a Model</strong></h2>
+First, let's create a model having relationships:
